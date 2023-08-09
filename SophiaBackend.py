@@ -117,7 +117,6 @@ def runAssistant(final):
                             FOUND=TRUE
                             ed.execute(f"select * from {tableref}")
                             location=ed.fetchall()
-                            print(location)
                             for i in range(0, len(location)):
                                 if location[i][0]=="web":
                                     webbrowser.open(location[i][1])
@@ -333,7 +332,6 @@ def StartTheProgram():
             keyword_index = porcupine.process(pcm)
 
             if keyword_index >= 0:
-                print('key is pressed')
                 try:
                     import pywhatkit
                     sound.play()

@@ -540,7 +540,6 @@ def add_group():
                 e.execute("select name from myGroup")
                 c=e.fetchall()
                 file_name=[]
-                print(file_name)
                 test.close()
                 for i in range(len(c)):
                     file_name.append(str(c[i][0]).lower())    
