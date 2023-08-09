@@ -45,7 +45,7 @@ class YtDownload:
                 self.root.destroy()
             
                 if formet=='mp4':
-                    threading.Thread(target=speak, args=(f"starting the download at {resolution} resolution",)).start()
+                    threading.Thread(target=speak, args=(f"starting the download at {resolution}.",)).start()
                     print("ok")
                     DownloadFile=link.streams.filter(resolution=resolution).first().download(output_path=location, filename_prefix=resolution)
                 
@@ -64,10 +64,12 @@ class YtDownload:
                 self.root.destroy()
             except Exception as a:
                 print(a.__class__.__name__)
-                if (a.__class__.__name__)=="FileExixtsError":
+                if (a.__class__.__name__)=="FileExistsError":
                     threading.Thread(target=speak, args=("File Already Exist",)).start()
                 elif a.__class__.__name__=="RegexMatchError":
                     threading.Thread(target=speak, args=("PLease enter a valid url of the video",)).start()
+                elif a.__class__.__name__=="AttributeError":
+                    threading.Thread(target=speak, args=("Unable to Download File. Please check whether the selected option is available on youtube or not",)).start()
 
         down_144=lambda : GetVideo('144p', 'mp4')
         down_240=lambda : GetVideo('240p', 'mp4')
