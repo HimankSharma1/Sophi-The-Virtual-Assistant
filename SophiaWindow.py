@@ -69,11 +69,10 @@ class MainWindow:
         self.database.add_command(label="Delete Contact", command=deleteContact)
         self.AddData=Menu(self.my_menu, tearoff=0)
         self.my_menu.add_cascade(label="Keywords", menu=self.AddData)
-        from SophiaManageDBMS import add_file, add_link, delete_file, delete_web, add_folder, delete_folder , add_pin
+        from SophiaManageDBMS import add_file, add_link, delete_file, delete_web, add_folder, delete_folder
         self.AddData.add_command(label="Add System File", command=add_file)
         self.AddData.add_command(label="Add Web URL", command=add_link)
         self.AddData.add_command(label="Add System Folder", command=add_folder)
-        self.AddData.add_command(label="Add Home Auomation", command=add_pin)
         self.AddData.add_command(label="Delete System File", command=delete_file)
         self.AddData.add_command(label="Delete Web Keyword", command=delete_web)
         self.AddData.add_command(label="Delete System Folder", command=delete_folder)

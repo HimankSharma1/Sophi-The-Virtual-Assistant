@@ -29,25 +29,6 @@ audio=int(config("Voice"))
 SophiaWindow.engine.setProperty('voice', SophiaWindow.voices[audio].id)
 
 
-def auto(name, pin, state):
-    url = f"https://blr1.blynk.cloud/external/api/get?token=tvCkVGOBKsoX948oGZXWWIW0HP8PT9lz&{pin}"
-    print(url)
-    response = requests.get(url)
-    response_json = response.json()
-    if response_json==state:
-        if state==False:
-            win.out(f"{name} is already on", output=False)
-        else:
-            win.out(f"{name} is already off", output=False)
-    if response_json!=state:
-        if state == False:
-            url = requests.get(f"https://blr1.blynk.cloud/external/api/update?token=tvCkVGOBKsoX948oGZXWWIW0HP8PT9lz&{pin}=0")
-            print(url)
-            win.out(f"Turning {name} on", output=False)
-        else:
-            url = requests.get(f"https://blr1.blynk.cloud/external/api/update?token=tvCkVGOBKsoX948oGZXWWIW0HP8PT9lz&{pin}=1")
-            win.out(f"Turning {name} off", output=False)
-
 def ai_out(text):
     response = openai.Completion.create(
         engine="text-davinci-002",
@@ -72,51 +53,12 @@ def runAssistant(final):
     if 'search on google' in final or 'google' in final or 'search' in final:
         search=str(final)
         check=search.split()
-        search=search.replace("search on google",'',1)
+        search=search.replace("search on google",'' ,1)
         if "search" in check[0:2]:
             search=search.replace("search",'',1)
         search=search.replace("on google",'',1)
         win.out(f'You asked me to search {search}')
         pywhatkit.search(search)
-    elif 'turn on' in final:
-        print("listen")
-        print(final)
-        data=mp.connect(host = host, user = user, password = sql_pass, database="Sophia")
-        ed=data.cursor()
-        final=final.replace('turn on','',1)
-        final=final.replace(' ','',1)
-        print(final)
-        ed.execute("select name from pins")
-        a=ed.fetchall()
-        filecontent=[]
-        for i in range(len(a)):
-            filecontent.append(str(a[i][0]).lower())
-        print("found")
-        for i in filecontent:
-            if final in i:
-                ed.execute(f"select vpin from pins where name ='{i}'")
-                pin=ed.fetchall()
-                print(pin)
-                auto(i,pin[0][0],0)
-            # else:
-            #     win.out(f"sorry, no pin found name {final}")
-    elif 'turn off' in final:
-        data=mp.connect(host = host, user = user, password = sql_pass, database="Sophia")
-        ed=data.cursor()
-        final=final.replace('turn off','',1)
-        final=final.replace(' ','',1)
-        ed.execute("select name from pins")
-        a=ed.fetchall()
-        filecontent=[]
-        for i in range(len(a)):
-            filecontent.append(str(a[i][0]).lower())
-        for i in filecontent:
-            if final in i:
-                ed.execute(f"select vpin from pins where name ='{i}'")
-                pin=ed.fetchall()
-                auto(i,pin[0][0],1)
-            # else:
-            #     win.out(f"sorry, no pin found name {final}")
     elif 'open' in final:
         data=mp.connect(host = host, user = user, password = sql_pass, database="Sophia")
         ed=data.cursor()
@@ -383,7 +325,7 @@ def StartTheProgram():
                     if (a.__class__.__name__)=="InternetException":
                         SophiaWindow.speak("Please check your internet connection")
     except Exception as a:
-        print(a)
+        print(a.__class__.__name__)
             
  
 if __name__=="SophiaBackend":

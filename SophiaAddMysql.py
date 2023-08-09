@@ -71,7 +71,9 @@ def AskYesNo(first=True):
             else:
                 try:
                     data = mysql.connect(host = host, user = user, password = sql_password)
+                    from SophiaManageDBMS import CreateDB
                     if data.is_connected():
+                        CreateDB(data)
                         sql.destroy()
                         route=dotenv.find_dotenv()
                         speak("connection established! data access granted. i will create a database name sophia, to access all the functions of the program")

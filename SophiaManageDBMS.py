@@ -30,10 +30,6 @@ def CreateDB(data):
         ed.execute("create table folder (name varchar(30) primary key, folder varchar(300))")
     except:
         pass
-    try:
-        ed.execute("create table pins (name varchar(30) primary key, vpin varchar(4))")
-    except:
-        pass
         data.close()
 
 def uploadContacts():
@@ -397,84 +393,6 @@ def add_link():
             KeyWord.delete(0,'end')
     Button(addFile, text="Add KeyWord", font=("Times", 25, "bold"), fg="red", command=uploadlink).place(x=60, y=240)
     addFile.mainloop()
-
-
-def add_pin():
-    host=config("Host")
-    user=config("User")
-    sql_password=config("SqlPassword")
-    addFile=Tk()
-    addFile.resizable(False, False)
-    addFile.config(bg="black")
-    addFile.iconbitmap('icon.ico')
-    addFile.geometry("400x350")
-    addFile.title("Adding a Name Of VPin")
-    Label(addFile, text="Enter a Name:", font=("Times", 25, "italic underline"), bg="black", fg="red").place(x=20, y=20)
-    KeyWord=Entry(addFile, font=("Times", 17), width=30)
-    KeyWord.place(x=40, y=80)
-    Label(addFile, text="Enter the Vpin:", font=("Times", 25, "italic underline"), bg="black", fg="red").place(x=20, y=120)
-    link=Entry(addFile, font=("Times", 15), width=33)
-    link.place(x=40, y=180)
-    def uploadpin():
-        name=KeyWord.get()
-        web=link.get()
-        try:
-            test = mysql.connect(host = host, user = user, password = sql_password, database="Sophia")
-            e = test.cursor()
-            e.execute("select name from pins")
-            c=e.fetchall()
-            file_name=[]
-            res=0
-            for i in range(len(c)):
-                file_name.append(str(c[i][0]).lower())    
-            for i in file_name:
-                if i == name.lower():
-                    Thread(target=speak, args=("Keyword already reserved",)).start()
-                    res=1
-                    break
-            if res==0:
-                e.execute("select name from pins")
-                c=e.fetchall()
-                file_name=[]
-                test.close()
-                for i in range(len(c)):
-                    file_name.append(str(c[i][0]).lower())    
-                for i in file_name:
-                    if i == name.lower():
-                        Thread(target=speak, args=("Keyword already reserved",)).start()
-                        res=1
-                        break
-        except Exception as err:
-            print(err.__class__.__name__)
-            if err.__class__.__name__=="DatabaseError":
-                res=1
-                Thread(target=speak, args=("unable to connect to my s q l server. please add again",)).start()
-        if res==0:
-            if name == "" and web=="":
-                Thread(target=speak, args=["please enter a valid Name and Vpin"]).start()
-            elif name=="":
-                Thread(target=speak, args=["please enter a valid Name"]).start()
-            elif web=="":
-                Thread(target=speak, args=["please enter a valid Vpin"]).start()
-            else:
-                addFile.destroy()
-                try:
-                    data = mysql.connect(host = host, user = user, password = sql_password, database="Sophia")
-                    ed = data.cursor()
-                    try:
-                        ed.execute(f"insert into pins values('{name}', '{web}')")
-                    except:
-                        ed.execute(f"update pins set vpin = '{web}' where name='{name}'")
-                    data.commit()
-                    Thread(target=speak, args=("keyword added",)).start()
-                    data.close()
-                except:
-                    pass
-        else:
-            KeyWord.delete(0,'end')
-    Button(addFile, text="Add Vpin", font=("Times", 25, "bold"), fg="red", command=uploadpin).place(x=60, y=240)
-    addFile.mainloop()
-
 
 
 def delete_file():
