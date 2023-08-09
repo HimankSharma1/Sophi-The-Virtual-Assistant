@@ -103,7 +103,27 @@ def runAssistant(final):
                         location=ed.fetchall()
                         webbrowser.open(location[0][0])
                         break
-                
+                if FOUND==False:
+                    ed.execute("select name from mygroup")
+                    a=ed.fetchall()
+                    filecontent=[]
+                    for i in range(len(a)):
+                        filecontent.append(str(a[i][0]).lower())
+                    for i in filecontent:
+                        if final in i:
+                            ed.execute(f"select tableref from mygroup where name = '{final}'")
+                            tableref=ed.fetchall()
+                            tableref=tableref[0][0]
+                            FOUND=TRUE
+                            ed.execute(f"select * from {tableref}")
+                            location=ed.fetchall()
+                            print(location)
+                            for i in range(0, len(location)):
+                                if location[i][0]=="web":
+                                    webbrowser.open(location[i][1])
+                                else:
+                                    os.startfile(location[i][1])
+                            break
             if FOUND==False:
                 win.out(f"No Keyword found name '{final}'")
         if FOUND==True:

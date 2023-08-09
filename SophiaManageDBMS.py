@@ -30,6 +30,10 @@ def CreateDB(data):
         ed.execute("create table folder (name varchar(30) primary key, folder varchar(300))")
     except:
         pass
+    try:
+        ed.execute("create table myGroup (name varchar(30) primary key, tableref varchar(30))")
+    except:
+        pass
         data.close()
 
 def uploadContacts():
@@ -490,3 +494,145 @@ def delete_web():
     entry.bind("<Return>", deleteweb)
     Button(a, text="Delete", fg="red", font=("Times", 15, "bold"), command=deleteweb).place(x=100, y=120)
     a.mainloop()
+
+def add_group():
+    a=Tk()
+    a.resizable(False, False)
+    a.config(bg="black")
+    a.geometry("300x200")
+    a.iconbitmap('icon.ico')
+    a.title("Enter the Group Keyword")
+    Label(a, text="Enter The Group Keyword", fg="red", bg="black", font=("Times", 17, "bold underline")).place(x=13, y=20)
+    entry=Entry(a, font=("Times", 16, "bold "), fg="red", width=25)
+    entry.place(x=10, y=80)
+    def addGK(abc=0):
+        name=entry.get()
+        tableref=name.replace(" ","_")
+        host=config("Host")
+        user=config("User")
+        sql_password=config("SqlPassword")
+        try:
+            test = mysql.connect(host = host, user = user, password = sql_password, database="Sophia")
+            e = test.cursor()
+            e.execute("select Name from files")
+            c=e.fetchall()
+            file_name=[]
+            res=0
+            for i in range(len(c)):
+                file_name.append(str(c[i][0]).lower())    
+            for i in file_name:
+                if i == name.lower():
+                    Thread(target=speak, args=("Keyword already reserved",)).start()
+                    res=1
+                    break
+            if res==0:
+                e.execute("select name from web")
+                c=e.fetchall()
+                file_name=[]
+                for i in range(len(c)):
+                    file_name.append(str(c[i][0]).lower())    
+                for i in file_name:
+                    if i == name.lower():
+                        Thread(target=speak, args=("Keyword already reserved",)).start()
+                        res=1
+                        break
+            if res==0:
+                e.execute("select name from myGroup")
+                c=e.fetchall()
+                file_name=[]
+                print(file_name)
+                test.close()
+                for i in range(len(c)):
+                    file_name.append(str(c[i][0]).lower())    
+                for i in file_name:
+                    if i == name.lower():
+                        Thread(target=speak, args=("Keyword already reserved",)).start()
+                        res=1
+                        break
+
+        except Exception as err:
+            if err.__class__.__name__=="DatabaseError":
+                res=1
+                Thread(target=speak, args=("unable to connect to my s q l server. please add again",)).start()
+        if res==0:
+            if name=="" or name == ' ':
+                Thread(target=speak, args=("you can not leave the keyword empty",)).start()
+                entry.delete(0,'end')
+            else:
+                data = mysql.connect(host = host, user = user, password = sql_password, database="Sophia")
+                ed = data.cursor()
+                ed.execute(f"insert into myGroup values('{name}', '{tableref}')")
+                data.commit()
+                a.destroy()
+                ed.execute(f"create table {tableref} (type varchar(7), file varchar(300) primary key)")
+                def link():
+                    linkt=Tk()
+                    linkt.resizable(False, False)
+                    linkt.config(bg="black")
+                    linkt.geometry("300x200")
+                    linkt.iconbitmap('icon.ico')
+                    linkt.title("Enter the Group Keyword")
+                    Label(linkt, text="Enter The Group Keyword", fg="red", bg="black", font=("Times", 17, "bold underline")).place(x=13, y=20)
+                    linkent=Entry(linkt, font=("Times", 16, "bold "), fg="red", width=25)
+                    linkent.place(x=10, y=80)
+                    def addGL():
+                        linkin=linkent.get()
+                        ed.execute(f"insert into {tableref} values('web','{linkin}')")
+                        data.commit()
+                        Thread(target=speak, args=("web link inserted",)).start()
+                        linkt.destroy()
+                        
+                    Button(linkt, text="Add Keyword", fg="red", font=("Times", 15, "bold"), command=addGL).place(x=100, y=120)
+                    linkt.mainloop()
+                def file():
+                    addFile=Tk()
+                    addFile.withdraw()
+                    filename=filedialog.askopenfilename(title="Add A File", initialdir="D:")
+                    if filename=="" or filename==" ":
+                        Thread(target=speak, args=("File Not added",)).start()
+                        addFile.destroy()
+                    else:
+                        ed.execute(f"insert into {tableref} values('file','{filename}')")
+                        data.commit()
+                        Thread(target=speak, args=("File inserted",)).start()
+                        addFile.destroy()
+                        
+                def folder():
+                    addFile=Tk()
+                    addFile.withdraw()
+                    filename=filedialog.askdirectory(title="Add A Folder", initialdir="D:")
+                    if filename=="" or filename==" ":
+                        Thread(target=speak, args=("folder not added",)).start()
+                        addFile.destroy()
+                    else:
+                        ed.execute(f"insert into {tableref} values('folder','{filename}')")
+                        data.commit()
+                        Thread(target=speak, args=("Folder inserted",)).start()
+                        addFile.destroy()
+                        
+                def done():
+                    Thread(target=speak, args=("Keyword Added",)).start()
+                    data.close()
+                    ent.destroy()
+                    
+                        
+                Thread(target=speak, args=("Please choose the Entries",)).start()
+                ent=Tk()
+                ent.resizable(False, False)
+                ent.config(bg="black")
+                ent.geometry("300x400")
+                ent.iconbitmap('icon.ico')
+                ent.title("Choose the Entries")
+                Label(ent, text="Choose The entries", fg="red", bg="black", font=("Times", 17, "bold underline")).place(x=13, y=20)
+                Button(ent, text="Add Web Link", fg="red", font=("Times", 15, "bold"), command=link).place(x=100, y=60)
+                Button(ent, text="Add Folder", fg="red", font=("Times", 15, "bold"), command=folder).place(x=100, y=110)
+                Button(ent, text="Add File", fg="red", font=("Times", 15, "bold"), command=file).place(x=100, y=160)
+                Button(ent, text="Done", fg="red", font=("Times", 15, "bold"), command=done).place(x=100, y=210)
+                ent.mainloop()
+                
+        else:
+            entry.delete(0,'end')
+    Button(a, text="Add Keyword", fg="red", font=("Times", 15, "bold"), command=addGK).place(x=100, y=120)
+    entry.bind("<Return>", addGK )
+    a.mainloop()
+    
