@@ -159,7 +159,6 @@ def add_folder():
                 e.execute("select name from web")
                 c=e.fetchall()
                 file_name=[]
-                test.close()
                 for i in range(len(c)):
                     file_name.append(str(c[i][0]).lower())    
                 for i in file_name:
@@ -167,7 +166,19 @@ def add_folder():
                         Thread(target=speak, args=("Keyword already reserved",)).start()
                         res=1
                         break
-
+            if res==0:
+                e.execute("select name from mygroup")
+                c=e.fetchall()
+                file_name=[]
+                test.close()
+                for i in range(len(c)):
+                    file_name.append(str(c[i][0].lower()))
+                for i in file_name:
+                    if i == name.lower():
+                        Thread(target=speak, args=("Keyword already reserved",)).start()
+                        res=1
+                        break
+                
         except Exception as err:
             if err.__class__.__name__=="DatabaseError":
                 res=1
@@ -282,9 +293,20 @@ def add_file():
                 e.execute("select name from web")
                 c=e.fetchall()
                 file_name=[]
-                test.close()
                 for i in range(len(c)):
                     file_name.append(str(c[i][0]).lower())    
+                for i in file_name:
+                    if i == name.lower():
+                        Thread(target=speak, args=("Keyword already reserved",)).start()
+                        res=1
+                        break
+            if res==0:
+                e.execute("select name from mygroup")
+                c=e.fetchall()
+                file_name=[]
+                test.close()
+                for i in range(len(c)):
+                    file_name.append(str(c[i][0].lower()))
                 for i in file_name:
                     if i == name.lower():
                         Thread(target=speak, args=("Keyword already reserved",)).start()
@@ -360,7 +382,6 @@ def add_link():
                 e.execute("select name from folder")
                 c=e.fetchall()
                 file_name=[]
-                test.close()
                 for i in range(len(c)):
                     file_name.append(str(c[i][0]).lower())    
                 for i in file_name:
@@ -368,7 +389,21 @@ def add_link():
                         Thread(target=speak, args=("Keyword already reserved",)).start()
                         res=1
                         break
+            if res==0:
+                e.execute("select name from mygroup")
+                c=e.fetchall()
+                file_name=[]
+                test.close()
+                for i in range(len(c)):
+                    file_name.append(str(c[i][0].lower()))
+                for i in file_name:
+                    if i == name.lower():
+                        Thread(target=speak, args=("Keyword already reserved",)).start()
+                        res=1
+                        break
+
         except Exception as err:
+            print(err.__class__.__name__)
             if err.__class__.__name__=="DatabaseError":
                 res=1
                 Thread(target=speak, args=("unable to connect to my s q l server. please add again",)).start()
